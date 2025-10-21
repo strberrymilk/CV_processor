@@ -7,15 +7,15 @@ var linkCV = "";
 function processCVsFromGmail(){
   const folder = DriveApp.getFolderById(""); // CV folder
   const trash_folder = DriveApp.getFolderById(""); // Trash folder
-  Logger.log("Carpetas encontradas");
-  var label = GmailApp.getUserLabelByName("CV_procesado") || GmailApp.createLabel("CV_procesado");
+  Logger.log("Folders found");
+  var label = GmailApp.getUserLabelByName("CV_processed") || GmailApp.createLabel("CV_processed");
   // Limit date: 20 minutes ago
   const now = new Date();
-  const twentyMinutesAgo = new Date(now.getTime() - 20*60*1000); // 20 minutes en miliseconds
+  const twentyMinutesAgo = new Date(now.getTime() - 20*60*1000); // 20 minutes in miliseconds
   const afterTimestamp = Math.floor(twentyMinutesAgo.getTime() / 1000); // in seconds (Unix timestamp)
   // Search only received emails after that time
-  var threads = GmailApp.search('has:attachment filename:pdf -label:CV_procesado after:' + afterTimestamp);
-  Logger.log("Buscando correos recientes");
+  var threads = GmailApp.search('has:attachment filename:pdf -label:CV_processed after:' + afterTimestamp);
+  Logger.log("Looking for recent emails");
   threads.forEach(function(thread){
     thread.getMessages().forEach(function(msg){
       msg.getAttachments().forEach(function(file){
@@ -26,7 +26,7 @@ function processCVsFromGmail(){
             if(ans){ 
               var newFile = folder.createFile(file);
               linkCV = newFile.getUrl();
-              Logger.log("CV guardado");
+              Logger.log("CV saved");
               var fields = extractFields(text);
               motivacionExpresada = msg.getPlainBody();
               fillSheets(fields);
@@ -41,7 +41,7 @@ function processCVsFromGmail(){
           } 
           catch(e){
             trash_folder.createFile(file);
-            Logger.log("Error procesando, guardado en NO CV: " + e);
+            Logger.log("Error processing, saved in NO CV: " + e);
           }
         }
       });
@@ -57,9 +57,9 @@ function getOpenaAIKey(){
 
 // Extract text
 function extractTextFromPDF(pdfBlob){
-  var tempFile = DriveApp.createFile(pdfBlob); // Archivo temporal en Drive con base en el archivo PDF en binario (crudo)
-  var docFile = Drive.Files.copy( // Crea una copia del archivo temporal
-    {title: pdfBlob.getName(), mimeType: "application/vnd.google-apps.document"}, // Convierte a Docs
+  var tempFile = DriveApp.createFile(pdfBlob); // Temporary file in Drive (raw)
+  var docFile = Drive.Files.copy( // Creates a copy of the temporary file
+    {title: pdfBlob.getName(), mimeType: "application/vnd.google-apps.document"}, // Converts to docs
     tempFile.getId(),
     {convert: true} 
   );
@@ -235,4 +235,5 @@ function sendConfirmationEmail(email, vacante){
   `;
   GmailApp.sendEmail(email, subject, "", {htmlBody: htmlBody});
   Logger.log("Correo de confirmación enviado a: " + email);
+
 }
