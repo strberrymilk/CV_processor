@@ -36,7 +36,7 @@ function processCVsFromGmail(){
             } 
             else{
               trash_folder.createFile(file);
-              Logger.log("Documento NO CV guardado");
+              Logger.log("NOT CV file saved");
             }
           } 
           catch(e){
@@ -63,10 +63,10 @@ function extractTextFromPDF(pdfBlob){
     tempFile.getId(),
     {convert: true} 
   );
-  var doc = DocumentApp.openById(docFile.id); // Documento manejable desde Apps Script
-  var text = doc.getBody().getText(); // Obtiene texto
-  DriveApp.getFileById(tempFile.getId()).setTrashed(true); // Desecha temporales
-  DriveApp.getFileById(docFile.id).setTrashed(true); // Desecha temporales
+  var doc = DocumentApp.openById(docFile.id); // Manageable file from Apps Script
+  var text = doc.getBody().getText(); // Gets text
+  DriveApp.getFileById(tempFile.getId()).setTrashed(true); // Temporary file to the trash
+  DriveApp.getFileById(docFile.id).setTrashed(true); // Temporary file to the trash
   return text;
 }
 
@@ -78,11 +78,11 @@ function isCV(text){
     messages: [
       {
         role: "system",
-        content: "Eres un verificador de documentos. Debes responder solo con 'true' o 'false'."
+        content: "You are a file verifier. You must answer just with 'true' or 'false."
       },
       {
         role: "user",
-        content: `¿Este texto parece ser un curriculum vitae (CV)?\n\n${text}`
+        content: `Does this file seem to be a curriculum vitae (CV)?\n\n${text}`
       }
     ]
   };  
@@ -107,11 +107,11 @@ function extractFields(text){
     messages: [
       {
         role: "system",
-        content: "Eres un analizador de de documentos. Debes identificar los siguientes campos: nombre, correo, telefono, ubicacion,gradoEstudios, linkedIn, areaEspecialidad, nivelExperiencia,notaExperiencia, organizacionesRelevantes, idiomas, vacanteALaQueAplica, temasQueLeApasionan, deporte, evaluacionCulturalFit, primerNombre"
+        content: "You are a file anaylzer. You must identify the next fields: name, email, phone, location, gradeOfStudies, linkedIn, specialityArea, experienceLevel, experienceNote, relevantOrganisations, languages, vacancy, passions, sport, culturalFitEvaluation, firstName"
       },
       {
         role: "user",
-        content: `Debes responder en formato JSON **estricto y válido**, sin explicaciones adicionales. 
+        content: `You have to answer in JSON format **strict and valid**, no additional information. 
         Asegúrate de que todos los nombres de los campos coincidan exactamente con los que te doy. 
         Si algún valor no se encuentra, usa null. 
         Si hay más de un valor, usa un array. 
@@ -229,11 +229,10 @@ function sendConfirmationEmail(email, vacante){
         </p>
         <p>Que tengas muy bonito día.</p>
         <p>Cyn</p>
-        <img src="${gif}" alt="GIF diciendo gracias" style="max-width:400px">
+        <img src="${gif}" alt="GIF saying thanks" style="max-width:400px">
       </body>
     </html>
   `;
   GmailApp.sendEmail(email, subject, "", {htmlBody: htmlBody});
-  Logger.log("Correo de confirmación enviado a: " + email);
-
+  Logger.log("Confirmation email sent to: " + email);
 }
