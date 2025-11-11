@@ -187,7 +187,7 @@ function fillSheets(raw){
   primerNombre = arrayToString(parsedJSON.primerNombre);
   Logger.log(parsedJSON);
   sheet.appendRow(["", nombre, correo, telefono, ubicacion, gradoEstudios, linkedIn, areaEspecialidad, nivelExperiencia, notaExperiencia, organizacionesRelevantes, idiomas, vacanteALaQueAplica, temasQueLeApasionan, linkCV,"","","", evaluacionCulturalFit, deporte, motivacionExpresada]);
-  Logger.log("Información guardada en Google Sheets");
+  Logger.log("Information successfully saved in Google Sheets");
 }
 
 // Gets a random GIF URL 
@@ -201,7 +201,7 @@ function getRandomGIF(){
 // Confirmation email
 function sendConfirmationEmail(email, vacante){
   if(!email){
-    Logger.log("No se encontró un correo válido. No se envió el email.");
+    Logger.log("Couldn't find a valid email address. The email wasn't sent.");
     return;
   }
   var gif = getRandomGIF();
